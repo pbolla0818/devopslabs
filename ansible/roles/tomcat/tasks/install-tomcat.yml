@@ -1,45 +1,50 @@
+---
+- name: Install Java 1.7
+  yum: name=java-1.7.0-openjdk state=present
+
+- name: add group "tomcat"
+  group: name={{tomcat_group}}
+
+- name: add user "tomcat"
+  user: name={{tomcat_user}} group={{tomcat_group}} home=/usr/share/tomcat createhome=no
+  become: True
+  become_method: sudo
+
 - name: Download Tomcat
-  #  get_url: url=http://mirrors.estointernet.in/apache/tomcat/tomcat-8/v8.5.53/bin/apache-tomcat-8.5.53.tar.gz dest=/opt/apache-tomcat-8.5.53.tar.gz
-  copy:
-    src: apache-tomcat-8.5.53.tar.gz
-    dest: /tmp
+  get_url: url=http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.61/bin/apache-tomcat-7.0.61.tar.gz dest=/opt/apache-tomcat-7.0.61.tar.gz
 
 - name: Extract archive
-  shell: /bin/tar xvf /tmp/apache-tomcat-8.5.53.tar.gz -C /opt
+  command: chdir=/usr/share /bin/tar xvf /opt/apache-tomcat-7.0.61.tar.gz -C /opt/ creates=/opt/apache-tomcat-7.0.61
 
-- name: create Symlink
-  file: 
-    src: /opt/apache-tomcat-8.5.53 
-    path: /opt/tomcat 
-    owner: tomcat
-    group: tomcat
-    state: link
+- name: Symlink install directory
+  file: src=/opt/apache-tomcat-7.0.61 path=/usr/share/tomcat state=link
 
 - name: Change ownership of Tomcat installation
+  file: path=/usr/share/tomcat/ owner=tomcat group=tomcat state=directory recurse=yes
+
+- name: Configure Tomcat server
+  template: src=server.xml dest=/usr/share/tomcat/conf/
+
+  
+- name: Create  sample directory
   file: 
-    path: /opt/tomcat/ 
-    owner: tomcat 
-    group: tomcat 
-    mode: 0755 
-    state: directory 
-    recurse: yes
+    path: "/opt/apache-tomcat-7.0.61/webapps/samples"
+    state: directory
+    mode: 0777
+  become: true
+  
 
-- name: Install Tomcat init script
-  copy: 
-    src: tomcat-initscript.sh 
-    dest: /etc/init.d/tomcatd 
-    mode: 0755
+- name: copy war file
+  copy: src=./target/LoginWebApp-1.war dest=/opt/apache-tomcat-7.0.61/webapps/
 
-- name: enable service
-  shell: update-rc.d tomcatd defaults 95
 
-- name: Configure Tomcat users
-  template: 
-    src: tomcat-users.xml 
-    dest: /opt/tomcat/conf/
   notify: restart tomcat
 
-- name: setup app directory
-  file: 
-    path: /app
-    state: directory
+- name: Install Tomcat init script
+  copy: src=tomcat-initscript.sh dest=/etc/init.d/tomcat mode=0755
+
+- name: Start Tomcat
+  service: name=tomcat state=started enabled=yes
+
+- name: wait for tomcat to start
+  wait_for: port={{http_port}}
