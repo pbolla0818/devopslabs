@@ -23,11 +23,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: myshop-fashion-svc-pavan
+  name: myshop-fashion-svc
 spec:
   type: ClusterIP
   ports:
-  - port: 80
+  - port: 8080
   selector:
     app: fashion
 
@@ -62,7 +62,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 80
+  - port: 8080
   selector:
     app: electronics
 
@@ -97,6 +97,6 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 80
+  - port: 8080
   selector:
     app: travel
