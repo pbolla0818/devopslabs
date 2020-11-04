@@ -12,12 +12,12 @@ spec:
         - path: /electronics
           backend:
             serviceName: myshop-electronics-svc
-            servicePort: 8080
+            servicePort: 80
         - path: /fashion
           backend:
             serviceName: myshop-fashion-svc
-            servicePort: 8080
+            servicePort: 80
         - path: /travel
           backend:
             serviceName: myshop-travel-svc
-            servicePort: 8080
+            servicePort: 80
