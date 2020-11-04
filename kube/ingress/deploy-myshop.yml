@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myshop-fashion-ms-pavan 
+  name: myshop-fashion-ms
 spec:
   replicas: 1
   selector:
@@ -58,7 +58,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: myshop-electronics-svc-pavan
+  name: myshop-electronics-svc
 spec:
   type: ClusterIP
   ports:
@@ -71,7 +71,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myshop-travel-ms-pavan
+  name: myshop-travel-ms
 spec:
   replicas: 2
   selector:
